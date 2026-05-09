@@ -161,21 +161,21 @@ function ReportPage() {
             </div>
 
             <div className="grid gap-3">
-              <div className="rounded-2xl border border-border bg-secondary/60 p-5">
+              <div className={`rounded-2xl border p-5 ${sevTone(100 - score).cardCls}`}>
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Business Health Score</div>
-                  <Gauge className="size-4 text-primary" />
+                  <Gauge className="size-4" style={{ color: sevTone(100 - score).fg }} />
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <div className="font-serif text-5xl font-bold text-gradient-primary">{score}</div>
+                  <div className="font-serif text-5xl font-bold" style={{ color: sevTone(100 - score).fg }}>{score}</div>
                   <div className="text-sm text-muted-foreground">/100</div>
                 </div>
-                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1 text-xs font-semibold text-danger">
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1 text-xs font-semibold" style={{ color: sevTone(100 - score).fg }}>
                   <ShieldAlert className="size-3.5" /> {tier}
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border bg-secondary/60 p-5">
+              <div className={`rounded-2xl border p-5 ${sevTone(Math.min(100, Math.round((leakHigh / (leakHigh + leakLow || 1)) * 100) + 30)).cardCls}`}>
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Est. Monthly Leakage</div>
                   <TrendingUp className="size-4 text-primary" />
@@ -207,24 +207,27 @@ function ReportPage() {
         <section className="mt-6">
           <SectionTitle icon={<AlertTriangle className="size-4" />}>Critical Gaps Detected</SectionTitle>
           <div className="grid gap-3 md:grid-cols-3">
-            {groups.slice(0, 3).map((g) => (
-              <div key={g.key} className="rounded-2xl border border-border bg-card p-5 shadow-card">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold">{g.title}</div>
-                  <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold uppercase text-destructive">
-                    {g.severity}%
-                  </span>
+            {groups.slice(0, 3).map((g) => {
+              const t = sevTone(g.severity);
+              return (
+                <div key={g.key} className={`rounded-2xl border p-5 shadow-card ${t.cardCls}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold">{g.title}</div>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${t.pillCls}`}>
+                      {t.label} · {g.severity}%
+                    </span>
+                  </div>
+                  <ul className="mt-3 space-y-1.5 text-sm text-foreground/80">
+                    {(g.bullets.length ? g.bullets : ["No critical signals"]).slice(0, 3).map((b) => (
+                      <li key={b} className="flex items-start gap-2">
+                        <CircleDot className="mt-0.5 size-3.5 shrink-0" style={{ color: t.fg }} />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                  {(g.bullets.length ? g.bullets : ["No critical signals"]).slice(0, 3).map((b) => (
-                    <li key={b} className="flex items-start gap-2">
-                      <CircleDot className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -232,29 +235,32 @@ function ReportPage() {
         <section className="mt-8">
           <SectionTitle icon={<TrendingUp className="size-4" />}>Where You're Bleeding</SectionTitle>
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-            {groups.map((g, i) => (
-              <div key={g.key} className={`grid items-center gap-4 px-5 py-4 md:grid-cols-[1.6fr_1fr_2fr] ${i ? "border-t border-border" : ""}`}>
-                <div>
-                  <div className="text-sm font-semibold">{g.title}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    {(g.bullets.length ? g.bullets : (GAP_GROUPS[g.key].options as readonly string[]).slice(0, 2) as unknown as string[]).join(" · ")}
+            {groups.map((g, i) => {
+              const t = sevTone(g.severity);
+              return (
+                <div key={g.key} className={`grid items-center gap-4 px-5 py-4 md:grid-cols-[1.6fr_1fr_2fr] ${i ? "border-t border-border" : ""}`}>
+                  <div>
+                    <div className="text-sm font-semibold">{g.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {(g.bullets.length ? g.bullets : (GAP_GROUPS[g.key].options as readonly string[]).slice(0, 2) as unknown as string[]).join(" · ")}
+                    </div>
+                  </div>
+                  <div className="text-sm font-semibold" style={{ color: t.fg }}>{fmtINR(g.leakLow)} – {fmtINR(g.leakHigh)}/mo</div>
+                  <div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Severity · {t.label}</span>
+                      <span className="font-semibold" style={{ color: t.fg }}>{g.severity}%</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${g.severity}%`, background: t.bar }}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="text-sm font-semibold">{fmtINR(g.leakLow)} – {fmtINR(g.leakHigh)}/mo</div>
-                <div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Severity</span>
-                    <span className="font-semibold">{g.severity}%</span>
-                  </div>
-                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-gradient-primary"
-                      style={{ width: `${g.severity}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -287,13 +293,16 @@ function ReportPage() {
                 ["Brand Trust Signals", "Low", "Strong"],
                 ["Operational Systems", "Weak", "Moderate"],
                 ["Online Visibility", "Average", "Strong"],
-              ].map(([k, you, m]) => (
-                <div key={k} className="rounded-2xl border border-border bg-card p-4 shadow-card">
-                  <div className="text-xs font-semibold text-muted-foreground">{k}</div>
-                  <div className="mt-2 text-sm font-bold text-destructive">You: {you}</div>
-                  <div className="text-xs text-muted-foreground">Market: {m}</div>
-                </div>
-              ))}
+              ].map(([k, you, m]) => {
+                const t = sevToneFromLabel(you);
+                return (
+                  <div key={k} className={`rounded-2xl border p-4 shadow-card ${t.cardCls}`}>
+                    <div className="text-xs font-semibold text-muted-foreground">{k}</div>
+                    <div className="mt-2 text-sm font-bold" style={{ color: t.fg }}>You: {you}</div>
+                    <div className="text-xs text-muted-foreground">Market: {m}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -420,4 +429,41 @@ function ImpactPill({ label }: { label: string }) {
     label === "MEDIUM" ? "bg-warning/15 text-[oklch(0.45_0.15_75)]" :
     "bg-success/15 text-[oklch(0.4_0.15_145)]";
   return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider ${tone}`}>{label}</span>;
+}
+
+type Tone = { label: "Good" | "Moderate" | "High Risk"; fg: string; bar: string; cardCls: string; pillCls: string };
+
+function sevTone(severity: number): Tone {
+  if (severity <= 33) {
+    return {
+      label: "Good",
+      fg: "var(--sev-good-fg)",
+      bar: "var(--sev-good-bar)",
+      cardCls: "bg-[color:var(--sev-good-bg)] border-[color:var(--sev-good-border)]",
+      pillCls: "bg-white/60 text-[color:var(--sev-good-fg)] border border-[color:var(--sev-good-border)]",
+    };
+  }
+  if (severity <= 66) {
+    return {
+      label: "Moderate",
+      fg: "var(--sev-mod-fg)",
+      bar: "var(--sev-mod-bar)",
+      cardCls: "bg-[color:var(--sev-mod-bg)] border-[color:var(--sev-mod-border)]",
+      pillCls: "bg-white/60 text-[color:var(--sev-mod-fg)] border border-[color:var(--sev-mod-border)]",
+    };
+  }
+  return {
+    label: "High Risk",
+    fg: "var(--sev-bad-fg)",
+    bar: "var(--sev-bad-bar)",
+    cardCls: "bg-[color:var(--sev-bad-bg)] border-[color:var(--sev-bad-border)]",
+    pillCls: "bg-white/60 text-[color:var(--sev-bad-fg)] border border-[color:var(--sev-bad-border)]",
+  };
+}
+
+function sevToneFromLabel(label: string): Tone {
+  const l = label.toLowerCase();
+  if (["good", "strong", "high"].includes(l)) return sevTone(20);
+  if (["moderate", "average", "partial", "ok"].includes(l)) return sevTone(50);
+  return sevTone(85);
 }

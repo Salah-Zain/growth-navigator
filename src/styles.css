@@ -81,6 +81,22 @@
   --shadow-card: 0 1px 0 oklch(0.95 0.01 255), 0 12px 40px -20px oklch(0.5 0.05 260 / 0.18);
 
   --grid-line: oklch(0.92 0.02 260 / 0.7);
+
+  /* Severity tones (light backgrounds + readable text) */
+  --sev-good-bg: oklch(0.96 0.06 145);
+  --sev-good-border: oklch(0.86 0.10 145);
+  --sev-good-fg: oklch(0.36 0.14 145);
+  --sev-good-bar: oklch(0.68 0.16 145);
+
+  --sev-mod-bg: oklch(0.96 0.07 75);
+  --sev-mod-border: oklch(0.88 0.12 75);
+  --sev-mod-fg: oklch(0.42 0.14 60);
+  --sev-mod-bar: oklch(0.78 0.16 75);
+
+  --sev-bad-bg: oklch(0.96 0.05 27);
+  --sev-bad-border: oklch(0.88 0.10 27);
+  --sev-bad-fg: oklch(0.45 0.18 27);
+  --sev-bad-bar: oklch(0.62 0.22 27);
 }
 
 @layer base {
