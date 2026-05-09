@@ -235,29 +235,32 @@ function ReportPage() {
         <section className="mt-8">
           <SectionTitle icon={<TrendingUp className="size-4" />}>Where You're Bleeding</SectionTitle>
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-            {groups.map((g, i) => (
-              <div key={g.key} className={`grid items-center gap-4 px-5 py-4 md:grid-cols-[1.6fr_1fr_2fr] ${i ? "border-t border-border" : ""}`}>
-                <div>
-                  <div className="text-sm font-semibold">{g.title}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    {(g.bullets.length ? g.bullets : (GAP_GROUPS[g.key].options as readonly string[]).slice(0, 2) as unknown as string[]).join(" · ")}
+            {groups.map((g, i) => {
+              const t = sevTone(g.severity);
+              return (
+                <div key={g.key} className={`grid items-center gap-4 px-5 py-4 md:grid-cols-[1.6fr_1fr_2fr] ${i ? "border-t border-border" : ""}`}>
+                  <div>
+                    <div className="text-sm font-semibold">{g.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {(g.bullets.length ? g.bullets : (GAP_GROUPS[g.key].options as readonly string[]).slice(0, 2) as unknown as string[]).join(" · ")}
+                    </div>
+                  </div>
+                  <div className="text-sm font-semibold" style={{ color: t.fg }}>{fmtINR(g.leakLow)} – {fmtINR(g.leakHigh)}/mo</div>
+                  <div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Severity · {t.label}</span>
+                      <span className="font-semibold" style={{ color: t.fg }}>{g.severity}%</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${g.severity}%`, background: t.bar }}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="text-sm font-semibold">{fmtINR(g.leakLow)} – {fmtINR(g.leakHigh)}/mo</div>
-                <div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Severity</span>
-                    <span className="font-semibold">{g.severity}%</span>
-                  </div>
-                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-gradient-primary"
-                      style={{ width: `${g.severity}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
