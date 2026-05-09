@@ -430,3 +430,40 @@ function ImpactPill({ label }: { label: string }) {
     "bg-success/15 text-[oklch(0.4_0.15_145)]";
   return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider ${tone}`}>{label}</span>;
 }
+
+type Tone = { label: "Good" | "Moderate" | "High Risk"; fg: string; bar: string; cardCls: string; pillCls: string };
+
+function sevTone(severity: number): Tone {
+  if (severity <= 33) {
+    return {
+      label: "Good",
+      fg: "var(--sev-good-fg)",
+      bar: "var(--sev-good-bar)",
+      cardCls: "bg-[color:var(--sev-good-bg)] border-[color:var(--sev-good-border)]",
+      pillCls: "bg-white/60 text-[color:var(--sev-good-fg)] border border-[color:var(--sev-good-border)]",
+    };
+  }
+  if (severity <= 66) {
+    return {
+      label: "Moderate",
+      fg: "var(--sev-mod-fg)",
+      bar: "var(--sev-mod-bar)",
+      cardCls: "bg-[color:var(--sev-mod-bg)] border-[color:var(--sev-mod-border)]",
+      pillCls: "bg-white/60 text-[color:var(--sev-mod-fg)] border border-[color:var(--sev-mod-border)]",
+    };
+  }
+  return {
+    label: "High Risk",
+    fg: "var(--sev-bad-fg)",
+    bar: "var(--sev-bad-bar)",
+    cardCls: "bg-[color:var(--sev-bad-bg)] border-[color:var(--sev-bad-border)]",
+    pillCls: "bg-white/60 text-[color:var(--sev-bad-fg)] border border-[color:var(--sev-bad-border)]",
+  };
+}
+
+function sevToneFromLabel(label: string): Tone {
+  const l = label.toLowerCase();
+  if (["good", "strong", "high"].includes(l)) return sevTone(20);
+  if (["moderate", "average", "partial", "ok"].includes(l)) return sevTone(50);
+  return sevTone(85);
+}
