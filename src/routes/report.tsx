@@ -207,24 +207,27 @@ function ReportPage() {
         <section className="mt-6">
           <SectionTitle icon={<AlertTriangle className="size-4" />}>Critical Gaps Detected</SectionTitle>
           <div className="grid gap-3 md:grid-cols-3">
-            {groups.slice(0, 3).map((g) => (
-              <div key={g.key} className="rounded-2xl border border-border bg-card p-5 shadow-card">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold">{g.title}</div>
-                  <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold uppercase text-destructive">
-                    {g.severity}%
-                  </span>
+            {groups.slice(0, 3).map((g) => {
+              const t = sevTone(g.severity);
+              return (
+                <div key={g.key} className={`rounded-2xl border p-5 shadow-card ${t.cardCls}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold">{g.title}</div>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${t.pillCls}`}>
+                      {t.label} · {g.severity}%
+                    </span>
+                  </div>
+                  <ul className="mt-3 space-y-1.5 text-sm text-foreground/80">
+                    {(g.bullets.length ? g.bullets : ["No critical signals"]).slice(0, 3).map((b) => (
+                      <li key={b} className="flex items-start gap-2">
+                        <CircleDot className="mt-0.5 size-3.5 shrink-0" style={{ color: t.fg }} />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                  {(g.bullets.length ? g.bullets : ["No critical signals"]).slice(0, 3).map((b) => (
-                    <li key={b} className="flex items-start gap-2">
-                      <CircleDot className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
