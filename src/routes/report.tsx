@@ -293,13 +293,16 @@ function ReportPage() {
                 ["Brand Trust Signals", "Low", "Strong"],
                 ["Operational Systems", "Weak", "Moderate"],
                 ["Online Visibility", "Average", "Strong"],
-              ].map(([k, you, m]) => (
-                <div key={k} className="rounded-2xl border border-border bg-card p-4 shadow-card">
-                  <div className="text-xs font-semibold text-muted-foreground">{k}</div>
-                  <div className="mt-2 text-sm font-bold text-destructive">You: {you}</div>
-                  <div className="text-xs text-muted-foreground">Market: {m}</div>
-                </div>
-              ))}
+              ].map(([k, you, m]) => {
+                const t = sevToneFromLabel(you);
+                return (
+                  <div key={k} className={`rounded-2xl border p-4 shadow-card ${t.cardCls}`}>
+                    <div className="text-xs font-semibold text-muted-foreground">{k}</div>
+                    <div className="mt-2 text-sm font-bold" style={{ color: t.fg }}>You: {you}</div>
+                    <div className="text-xs text-muted-foreground">Market: {m}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
