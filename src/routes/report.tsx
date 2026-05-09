@@ -161,21 +161,21 @@ function ReportPage() {
             </div>
 
             <div className="grid gap-3">
-              <div className="rounded-2xl border border-border bg-secondary/60 p-5">
+              <div className={`rounded-2xl border p-5 ${sevTone(100 - score).cardCls}`}>
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Business Health Score</div>
-                  <Gauge className="size-4 text-primary" />
+                  <Gauge className="size-4" style={{ color: sevTone(100 - score).fg }} />
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <div className="font-serif text-5xl font-bold text-gradient-primary">{score}</div>
+                  <div className="font-serif text-5xl font-bold" style={{ color: sevTone(100 - score).fg }}>{score}</div>
                   <div className="text-sm text-muted-foreground">/100</div>
                 </div>
-                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1 text-xs font-semibold text-danger">
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1 text-xs font-semibold" style={{ color: sevTone(100 - score).fg }}>
                   <ShieldAlert className="size-3.5" /> {tier}
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border bg-secondary/60 p-5">
+              <div className={`rounded-2xl border p-5 ${sevTone(Math.min(100, Math.round((leakHigh / (leakHigh + leakLow || 1)) * 100) + 30)).cardCls}`}>
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Est. Monthly Leakage</div>
                   <TrendingUp className="size-4 text-primary" />
