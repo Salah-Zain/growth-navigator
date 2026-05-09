@@ -15,10 +15,18 @@ export type AuditData = {
 };
 
 const KEY = "perpex_audit_data";
+const ADMIN_KEY = "perpex_all_audits";
 
 export function saveAudit(data: AuditData) {
   if (typeof window === "undefined") return;
   sessionStorage.setItem(KEY, JSON.stringify(data));
+  
+  try {
+    const existing = JSON.parse(localStorage.getItem(ADMIN_KEY) || "[]");
+    const record = { ...data, id: Date.now().toString(), timestamp: new Date().toISOString() };
+    existing.push(record);
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(existing));
+  } catch {}
 }
 
 export function loadAudit(): AuditData {
@@ -27,6 +35,15 @@ export function loadAudit(): AuditData {
     return JSON.parse(sessionStorage.getItem(KEY) || "{}");
   } catch {
     return {};
+  }
+}
+
+export function getAllAudits(): (AuditData & { id: string; timestamp: string })[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(ADMIN_KEY) || "[]");
+  } catch {
+    return [];
   }
 }
 
@@ -46,8 +63,8 @@ export const INDUSTRIES = [
 ];
 
 export const TEAM_SIZES = ["Solo founder", "2–5 people", "6–15 people", "16–50 people", "50+ people"];
-export const REVENUES = ["Below ₹1L/month", "₹1L–₹5L/month", "₹5L–₹25L/month", "₹25L–₹1Cr/month", "₹1Cr–₹5Cr/month", "₹5Cr+/month"];
-export const TARGETS = ["Below ₹5L/month", "₹5L–₹15L/month", "₹15L–₹50L/month", "₹50L–₹1Cr/month", "₹1Cr–₹5Cr/month", "₹5Cr+/month"];
+export const REVENUES = ["Below ₹1L/month", "₹1L–₹5L/month", "₹5L–₹10L/month", "₹10L–₹15L/month", "₹15L–₹20L/month", "Above ₹20L/month"];
+export const TARGETS = ["Below ₹1L/month", "₹1L–₹5L/month", "₹5L–₹10L/month", "₹10L–₹15L/month", "₹15L–₹20L/month", "Above ₹20L/month"];
 export const TIMELINES = ["Within 3 months", "Within 6 months", "Within 12 months", "1–2 years"];
 export const GOALS = [
   "Increase sales and revenue",
