@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AuditData, getAllAudits, deriveScore } from "@/lib/audit-data";
-import { ArrowLeft, Trash2, Eye, X, User, Building2, Target, BarChart3, FileText } from "lucide-react";
+import { ArrowLeft, Trash2, Eye, X, User, Building2, Target, BarChart3, FileText, ShieldAlert } from "lucide-react";
 import { format } from "date-fns";
 import { AuditReport } from "@/components/AuditReport";
 
@@ -169,12 +169,28 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 function AdminDashboard() {
+  const [password, setPassword] = useState("");
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [audits, setAudits] = useState<StoredAudit[]>([]);
   const [viewingAudit, setViewingAudit] = useState<StoredAudit | null>(null);
 
+  const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+
   useEffect(() => {
     setAudits(getAllAudits().reverse());
-  }, []);
+    if (!adminPassword) {
+      setIsAuthorized(true);
+    }
+  }, [adminPassword]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === adminPassword) {
+      setIsAuthorized(true);
+    } else {
+      alert("Invalid password");
+    }
+  };
 
   const clearAudits = () => {
     if (confirm("Are you sure you want to delete all audit records? This cannot be undone.")) {
@@ -190,6 +206,45 @@ function AdminDashboard() {
       setAudits(updated);
     }
   };
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-hero p-6 overflow-hidden">
+        <div className="absolute inset-0 bg-grid pointer-events-none opacity-40" />
+        <div className="relative z-10 w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-elegant text-center backdrop-blur-sm">
+          <div className="mx-auto mb-6 size-14 rounded-2xl bg-gradient-primary shadow-soft flex items-center justify-center">
+            <ShieldAlert className="text-primary-foreground size-7" />
+          </div>
+          <h1 className="text-2xl font-serif font-bold mb-2">Admin Access</h1>
+          <p className="text-sm text-muted-foreground mb-8">Enter the password to view business leads.</p>
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold text-foreground">Password</span>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-2xl border border-border bg-card px-5 py-3.5 text-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
+                autoFocus
+              />
+            </label>
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-gradient-primary py-4 text-sm font-semibold text-primary-foreground shadow-elegant transition hover:translate-y-[-2px]"
+            >
+              Unlock Dashboard
+            </button>
+            <div className="text-center">
+              <Link to="/" className="inline-block mt-4 text-xs text-muted-foreground hover:text-primary transition underline underline-offset-4">
+                Back to Home
+              </Link>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-hero pb-24">
@@ -314,3 +369,4 @@ function AdminDashboard() {
     </div>
   );
 }
+
